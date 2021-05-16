@@ -191,6 +191,22 @@ class EventsController extends BaseController
      */
 
     public function getFutureEventsWithWorkshops() {
-        throw new \Exception('implement in coding task 2');
+
+        try {
+            $events = Event::select([
+                'id',
+                'name',
+                'created_at',
+                'updated_at'
+            ])->with('Workshop')->whereHas('Workshop', function ($query) {
+                $now = date('Y-m-d H:i:s');
+                return $query->where('end', '>', $now);
+            })->get();
+            return response()->json($events, 200);
+        } catch (QueryException $e) {
+            throw new \Exception('Query Error Occurs');
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
     }
 }
