@@ -4,6 +4,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\MenuItem;
+use Illuminate\Database\QueryException;
 use Illuminate\Routing\Controller as BaseController;
 
 class MenuController extends BaseController
@@ -94,7 +95,18 @@ class MenuController extends BaseController
     ]
      */
 
+    /**
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
+     */
     public function getMenuItems() {
-        throw new \Exception('implement in coding task 3');
+        try {
+            $menu = MenuItem::with('children')->first();
+            return response()->json($menu, 200);
+        } catch (QueryException $e) {
+            throw new \Exception('Query Error Occurs');
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
     }
 }
