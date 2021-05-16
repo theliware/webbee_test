@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -97,7 +98,21 @@ class EventsController extends BaseController
      */
 
     public function getEventsWithWorkshops() {
-        throw new \Exception('implement in coding task 1');
+
+        try {
+            $events = Event::select([
+                'id',
+                'name',
+                'created_at',
+                'updated_at'
+            ])->with(['Workshop'])->get();
+            return response()->json($events, 200);
+        } catch (QueryException $e) {
+            throw new \Exception('Query Error Occurs');
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+
     }
 
 
